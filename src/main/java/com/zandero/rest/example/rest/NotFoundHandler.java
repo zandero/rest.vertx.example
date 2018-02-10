@@ -21,7 +21,6 @@ public class NotFoundHandler extends NotFoundResponseWriter {
 		response.headers().clear();
 		response.headers().add("Content-Type", "text/html;charset=UTF-8");
 
-
 		response.end(getNotFoundHtml(request.path()));
 	}
 

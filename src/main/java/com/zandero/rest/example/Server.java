@@ -9,16 +9,10 @@ import com.zandero.cmd.CommandLineException;
 import com.zandero.cmd.CommandLineParser;
 import com.zandero.cmd.option.CommandOption;
 import com.zandero.cmd.option.IntOption;
-import com.zandero.rest.RestBuilder;
-import com.zandero.rest.example.rest.EchoRest;
-import com.zandero.rest.example.rest.NotFoundHandler;
-import com.zandero.rest.example.rest.RestNotFoundHandler;
 import com.zandero.settings.Settings;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Handler;
-import io.vertx.core.Launcher;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,47 +22,49 @@ import org.slf4j.LoggerFactory;
 public class Server extends AbstractVerticle {
 
 	private static final String PORT_SETTING = "port";
+	private static final String POOL_SIZE = "pool";
 
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
 	private static Settings settings;
 
-	public static void main(String[] args) throws CommandLineException {
+	public static void main(String[] args) {
 
-		CommandOption port = new IntOption("p")
-			                     .longCommand(PORT_SETTING)
-			                     .setting(PORT_SETTING)
-			                     .defautlTo(4444);
+		CommandOption portOption = new IntOption("p")
+			                           .longCommand(PORT_SETTING)
+			                           .setting(PORT_SETTING)
+			                           .defaultsTo(4444);
+
+		CommandOption poolSizeOption = new IntOption("s")
+			                               .longCommand(POOL_SIZE)
+			                               .setting(POOL_SIZE)
+			                               .defaultsTo(10);
 
 		CommandBuilder builder = new CommandBuilder();
-		builder.add(port);
+		builder.add(portOption);
+		builder.add(poolSizeOption);
 
 		CommandLineParser parser = new CommandLineParser(builder);
-		settings = parser.parse(args);
 
-		Launcher.executeCommand("run", Server.class.getName());
-	}
+		try {
+			settings = parser.parse(args);
 
-	@Override
-	public void start() {
+			// read settings
+			int port = settings.getInt(PORT_SETTING);
+			int poolSize = settings.getInt(POOL_SIZE);
 
-		Router router = new RestBuilder(vertx)
-			                .register(EchoRest.class) // simple echo rest
-			                .notFound("/rest", RestNotFoundHandler.class) // rest not found info
-							.notFound(NotFoundHandler.class) // last resort 404 page
-			                .build();
+			// deploy verticle
+			Vertx vertx = Vertx.vertx();
 
-		Handler<RoutingContext> noMatchHandler = context -> {
-			context.response().end("Hello world!");
-		};
-		router.route().last().handler(noMatchHandler);
+			DeploymentOptions options = new DeploymentOptions();
+			options.setWorkerPoolSize(poolSize);
 
-		int port = settings.getInt(PORT_SETTING);
-		log.info("Listening on port: " + port);
-
-		vertx.createHttpServer()
-		     .requestHandler(router::accept)
-		     .listen(port);
+			vertx.deployVerticle(new RestVerticle(port), options);
+		}
+		catch (CommandLineException e) {
+			log.error("Failed to get settings: ", e);
+			// TODO: show Help
+		}
 	}
 }
 
