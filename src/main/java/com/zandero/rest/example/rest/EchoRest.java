@@ -13,18 +13,17 @@ import static com.zandero.rest.example.ServerVerticle.API_ROOT;
  *
  */
 @Path(API_ROOT)
+@Produces("application/json")
 public class EchoRest {
 
 	@GET
-	@Path("/echo")
-	@Produces("application/json")
+	@Path("echo")
 	public String echo() {
 		return "echo";
 	}
 
 	@GET
-	@Path("/version")
-	@Produces("application/json")
+	@Path("version")
 	public VersionDto version() {
 
 		return VersionUtils.version();

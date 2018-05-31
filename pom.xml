@@ -69,9 +69,6 @@
         <!-- testing -->
         <version.junit>[4.12,)</version.junit>
         <version.mockito-all>[1.10.19,)</version.mockito-all>
-        <version.trajano>[2.1.0,)</version.trajano>
-        <version.jetty>[9.3.7.v20160115,)</version.jetty>
-        <version.glassfish>2.22.2</version.glassfish>
 
     </properties>
 

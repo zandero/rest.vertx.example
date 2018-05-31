@@ -2,13 +2,14 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Setting level to debug will show a handled exception in the log. -->
-    <root level="debug">
+    <logger name="com.zandero.rest" level="DEBUG" />
+
+    <!-- Setting level to debug will show all logs produced -->
+    <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
 
