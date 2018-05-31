@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.zandero.rest.example.ServerVerticle.API_ROOT;
+
 /**
  *
  */
@@ -36,7 +38,7 @@ public class EchoRestTest extends BaseTest {
 		// call and check response
 		final Async async = context.async();
 
-		client.getNow("/rest/echo", response -> {
+		client.getNow(API_ROOT + "/echo", response -> {
 
 			context.assertEquals(200, response.statusCode());
 
@@ -53,12 +55,12 @@ public class EchoRestTest extends BaseTest {
 		// call and check response
 		final Async async = context.async();
 
-		client.getNow("/rest/tralala", response -> {
+		client.getNow(API_ROOT + "/tralala", response -> {
 
 			context.assertEquals(404, response.statusCode());
 
 			response.handler(body -> {
-				context.assertEquals("{\"message\":\"Resource: '/rest/tralala', not found.\",\"code\":404}", body.toString());
+				context.assertEquals("{\"message\":\"Resource: '" + API_ROOT + "/tralala', not found.\",\"code\":404}", body.toString());
 				async.complete();
 			});
 		});

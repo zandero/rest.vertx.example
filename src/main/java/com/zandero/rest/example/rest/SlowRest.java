@@ -11,10 +11,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 
+import static com.zandero.rest.example.ServerVerticle.API_ROOT;
+
 /**
  * Slow working rest for simulation purposes only
  */
-@Path("/rest/slow")
+@Path(API_ROOT + "/slow")
 public class SlowRest {
 
 	private SlowService slowService;

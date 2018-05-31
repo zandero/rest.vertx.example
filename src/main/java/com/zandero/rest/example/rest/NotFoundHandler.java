@@ -1,25 +1,22 @@
 package com.zandero.rest.example.rest;
 
-import com.github.mustachejava.Mustache;
 import com.zandero.rest.writer.NotFoundResponseWriter;
-import com.zandero.template.MustacheUtils;
+import com.zandero.template.BaseTemplate;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import com.zandero.template.*;
 
+import javax.ws.rs.Produces;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Handles all request to any other URL ... and returns 404 HTML page
  */
+@Produces("text/html;charset=UTF-8")
 public class NotFoundHandler extends NotFoundResponseWriter {
 
 	@Override
 	public void write(HttpServerRequest request, HttpServerResponse response) {
-
-		response.headers().clear();
-		response.headers().add("Content-Type", "text/html;charset=UTF-8");
 
 		response.end(getNotFoundHtml(request.path()));
 	}

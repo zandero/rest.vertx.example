@@ -47,7 +47,7 @@
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 
-        <version.zandero.rest.vertx>0.8.1</version.zandero.rest.vertx>
+        <version.zandero.rest.vertx>[0.8.4,)</version.zandero.rest.vertx>
         <version.zandero.utils>[1.2.3,)</version.zandero.utils>
         <version.zandero.utils.extra>[1.2.2,)</version.zandero.utils.extra>
         <version.zandero.http>[1.0,)</version.zandero.http>
@@ -57,6 +57,10 @@
 
         <version.mustache>[0.9.4,)</version.mustache>
         <version.vertx>3.4.1</version.vertx>
+
+        <version.javax-inject>1</version.javax-inject>
+        <version.guice>4.0</version.guice>
+        <version.guava>22.0</version.guava>
 
         <!-- logging -->
         <version.logback>[1.1.7,)</version.logback>
@@ -132,6 +136,19 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-rx-java</artifactId>
             <version>${version.vertx}</version>
+        </dependency>
+
+        <!-- Guice injection -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${version.guice}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${version.guava}</version>
         </dependency>
 
         <!-- LOGGER -->

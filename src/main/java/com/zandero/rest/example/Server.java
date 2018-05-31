@@ -1,70 +1,70 @@
 package com.zandero.rest.example;
 
-/**
- *
- */
-
-import com.zandero.cmd.CommandBuilder;
 import com.zandero.cmd.CommandLineException;
-import com.zandero.cmd.CommandLineParser;
-import com.zandero.cmd.option.CommandOption;
-import com.zandero.cmd.option.IntOption;
-import com.zandero.settings.Settings;
-import io.vertx.core.AbstractVerticle;
+import com.zandero.rest.example.rest.dto.VersionDto;
+import com.zandero.rest.example.utils.VersionUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Jetty set up with Guice and RestEasy
- */
-public class Server extends AbstractVerticle {
+import java.util.List;
 
-	private static final String PORT_SETTING = "port";
-	private static final String POOL_SIZE = "pool";
+/**
+ * Server set up ...
+ */
+public class Server {
 
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
-	private static Settings settings;
+	ServerSettings settings = new ServerSettings();
 
 	public static void main(String[] args) {
+		new Server().run(args);
+	}
 
-		CommandOption portOption = new IntOption("p")
-			                           .longCommand(PORT_SETTING)
-			                           .setting(PORT_SETTING)
-			                           .defaultsTo(4444);
-
-		CommandOption poolSizeOption = new IntOption("s")
-			                               .longCommand(POOL_SIZE)
-			                               .setting(POOL_SIZE)
-			                               .defaultsTo(10);
-
-		CommandBuilder builder = new CommandBuilder();
-		builder.add(portOption);
-		builder.add(poolSizeOption);
-
-		CommandLineParser parser = new CommandLineParser(builder);
+	public void run(String[] args) {
 
 		try {
-			settings = parser.parse(args);
+			settings.parse(args);
 
-			// read settings
-			int port = settings.getInt(PORT_SETTING);
-			int poolSize = settings.getInt(POOL_SIZE);
+			if (settings.showVersion()) {
+				showVersion();
+			} else {
 
-			// deploy verticle
-			Vertx vertx = Vertx.vertx();
+				// read settings
+				int poolSize = settings.getPoolSize();
 
-			DeploymentOptions options = new DeploymentOptions();
-			options.setWorkerPoolSize(poolSize);
+				// deploy verticle
+				Vertx vertx = Vertx.vertx();
 
-			vertx.deployVerticle(new RestVerticle(port), options);
+				DeploymentOptions options = new DeploymentOptions();
+				options.setWorkerPoolSize(poolSize);
+
+				vertx.deployVerticle(new ServerVerticle(settings), options);
+			}
 		}
 		catch (CommandLineException e) {
 			log.error("Failed to get settings: ", e);
-			// TODO: show Help
+
+			showVersion();
+			showHelp(settings.getHelp());
 		}
+	}
+
+	private void showHelp(List<String> help) {
+		for (String item: help) {
+			System.out.println(item);
+		}
+
+		System.out.print(System.lineSeparator());
+	}
+
+	private void showVersion() {
+
+		VersionDto version = VersionUtils.version();
+		System.out.println(String.format("Rest.vertx example API service: %s, %s", version.getVersion(), version.getDate()));
+		System.out.print(System.lineSeparator());
 	}
 }
 
