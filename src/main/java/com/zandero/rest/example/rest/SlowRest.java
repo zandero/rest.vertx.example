@@ -2,10 +2,12 @@ package com.zandero.rest.example.rest;
 
 import com.zandero.rest.annotation.ResponseWriter;
 import com.zandero.rest.example.service.SlowService;
+import com.zandero.rest.example.service.SlowServiceImpl;
 import com.zandero.rest.writer.GenericResponseWriter;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -21,9 +23,10 @@ public class SlowRest {
 
 	private SlowService slowService;
 
-	public SlowRest() {
+	@Inject
+	public SlowRest(SlowService injectedSlow) {
 
-		slowService = new SlowService();
+		slowService = injectedSlow;
 	}
 
 	@GET

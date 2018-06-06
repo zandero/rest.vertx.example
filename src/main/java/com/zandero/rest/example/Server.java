@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Server set up ...
+ * Server set up ... and start up
  */
 public class Server {
 
@@ -26,25 +26,28 @@ public class Server {
 	public void run(String[] args) {
 
 		try {
+			// get settings from command line
 			settings.parse(args);
 
+			// show version only?
 			if (settings.showVersion()) {
 				showVersion();
-			} else {
-
-				// read settings
-				int poolSize = settings.getPoolSize();
-
-				// deploy verticle
-				Vertx vertx = Vertx.vertx();
-
-				DeploymentOptions options = new DeploymentOptions();
-				options.setWorkerPoolSize(poolSize);
-
-				vertx.deployVerticle(new ServerVerticle(settings), options);
+				return;
 			}
+
+			// get pool size
+			int poolSize = settings.getPoolSize();
+
+			// deploy verticle
+			Vertx vertx = Vertx.vertx();
+
+			DeploymentOptions options = new DeploymentOptions();
+			options.setWorkerPoolSize(poolSize);
+
+			vertx.deployVerticle(new ServerVerticle(settings), options);
 		}
 		catch (CommandLineException e) {
+			// some command line setting was invalid ... show help
 			log.error("Failed to get settings: ", e);
 
 			showVersion();
@@ -53,7 +56,7 @@ public class Server {
 	}
 
 	private void showHelp(List<String> help) {
-		for (String item: help) {
+		for (String item : help) {
 			System.out.println(item);
 		}
 

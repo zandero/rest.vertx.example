@@ -3,11 +3,13 @@ package com.zandero.rest.example;
 import com.google.inject.Module;
 import com.zandero.rest.RestBuilder;
 import com.zandero.rest.example.injection.GuiceInjectionProvider;
-import com.zandero.rest.example.rest.EchoRest;
-import com.zandero.rest.example.rest.NotFoundHandler;
-import com.zandero.rest.example.rest.RestErrorHandler;
-import com.zandero.rest.example.rest.RestNotFoundHandler;
 import com.zandero.rest.example.injection.ServiceModule;
+import com.zandero.rest.example.rest.EchoRest;
+import com.zandero.rest.example.rest.PagesRest;
+import com.zandero.rest.example.rest.SlowRest;
+import com.zandero.rest.example.rest.handlers.NotFoundErrorHandler;
+import com.zandero.rest.example.rest.handlers.RestErrorHandler;
+import com.zandero.rest.example.rest.handlers.RestNotFoundHandler;
 import com.zandero.rest.example.utils.LogUtils;
 import com.zandero.utils.ResourceUtils;
 import io.vertx.core.AbstractVerticle;
@@ -20,16 +22,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * This is a basic server set up to get REST.vertx going ...
  */
 public class ServerVerticle extends AbstractVerticle {
 
-	public static final String API_ROOT = "/api";
-
 	private static final Logger log = LoggerFactory.getLogger(ServerVerticle.class);
 
+	/**
+	 * Root URL for REST endpoints
+	 */
+	public static final String API_ROOT = "/api";
+
+	/**
+	 * Command line setting holder
+	 */
 	private final ServerSettings settings;
 
+	/**
+	 * @param serverSettings startup settings
+	 */
 	public ServerVerticle(ServerSettings serverSettings) {
 		settings = serverSettings;
 	}
@@ -45,19 +56,30 @@ public class ServerVerticle extends AbstractVerticle {
 		allowedHeaders.add("Content-Type");
 		allowedHeaders.add("Origin");
 
-		// Inject services
+		// Create router ...
 		Router router = new RestBuilder(vertx)
+			                // set injector
 			                .injectWith(new GuiceInjectionProvider(getModules()))
+
+			                // enable CORS calls
 			                .enableCors("*", false, -1, allowedHeaders,
 			                            HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
-			                .register(EchoRest.class)
 
-			                .notFound(API_ROOT, RestNotFoundHandler.class) // rest not found info
-			                .notFound(NotFoundHandler.class) // last resort 404 page
+			                // register RESTs
+			                .register(EchoRest.class,
+			                          SlowRest.class,
+			                          PagesRest.class)
+
+			                // handle REST / page not found requests
+			                .notFound(API_ROOT, RestNotFoundHandler.class) // rest not found info - all under /api/*
+
+			                // add general purpose REST error handler
+			                .errorHandler(NotFoundErrorHandler.class)
 			                .errorHandler(RestErrorHandler.class)
 			                .build();
 
 
+		// set logging
 		String logFile = settings.getLog();
 		if (logFile != null) {
 			LogUtils.setConfig(logFile);
@@ -65,14 +87,17 @@ public class ServerVerticle extends AbstractVerticle {
 			LogUtils.setConfig(ResourceUtils.getResourceAbsolutePath("/logback.xml"));
 		}
 
+		// use port
 		int port = settings.getPort();
 		log.info("Listening on port: " + port);
 
+		// start up server
 		vertx.createHttpServer()
 		     .requestHandler(router::accept)
 		     .listen(port);
 	}
 
+	// provide injected services ...
 	private Module[] getModules() {
 		return new Module[]{
 			new ServiceModule()

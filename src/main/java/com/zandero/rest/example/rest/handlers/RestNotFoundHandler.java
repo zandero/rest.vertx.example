@@ -1,4 +1,4 @@
-package com.zandero.rest.example.rest;
+package com.zandero.rest.example.rest.handlers;
 
 import com.zandero.rest.example.rest.dto.ErrorDto;
 import com.zandero.rest.writer.NotFoundResponseWriter;

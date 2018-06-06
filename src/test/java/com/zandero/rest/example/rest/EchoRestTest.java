@@ -1,6 +1,7 @@
 package com.zandero.rest.example.rest;
 
 import com.zandero.rest.RestBuilder;
+import com.zandero.rest.example.rest.handlers.RestNotFoundHandler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

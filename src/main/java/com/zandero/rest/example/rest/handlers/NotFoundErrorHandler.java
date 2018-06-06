@@ -1,22 +1,21 @@
-package com.zandero.rest.example.rest;
+package com.zandero.rest.example.rest.handlers;
 
-import com.zandero.rest.writer.NotFoundResponseWriter;
+import com.zandero.rest.exception.ExceptionHandler;
 import com.zandero.template.BaseTemplate;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 
-import javax.ws.rs.Produces;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Handles all request to any other URL ... and returns 404 HTML page
+ *
  */
-@Produces("text/html;charset=UTF-8")
-public class NotFoundHandler extends NotFoundResponseWriter {
+public class NotFoundErrorHandler implements ExceptionHandler<FileNotFoundException> {
 
 	@Override
-	public void write(HttpServerRequest request, HttpServerResponse response) {
+	public void write(FileNotFoundException result, HttpServerRequest request, HttpServerResponse response) throws Throwable {
 
 		response.end(getNotFoundHtml(request.path()));
 	}
