@@ -5,6 +5,7 @@ import com.zandero.rest.example.rest.dto.VersionDto;
 import com.zandero.rest.example.utils.VersionUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.WorkerExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +38,15 @@ public class Server {
 
 			// get pool size
 			int poolSize = settings.getPoolSize();
+			long maxExecuteTime = 120000;
 
 			// deploy verticle
 			Vertx vertx = Vertx.vertx();
 
 			DeploymentOptions options = new DeploymentOptions();
 			options.setWorkerPoolSize(poolSize);
+			options.setMaxWorkerExecuteTime(maxExecuteTime);
+			options.setWorkerPoolName("rest.vertx.example.worker.pool");
 
 			vertx.deployVerticle(new ServerVerticle(settings), options);
 		}

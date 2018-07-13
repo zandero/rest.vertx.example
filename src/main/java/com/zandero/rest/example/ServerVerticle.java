@@ -89,7 +89,7 @@ public class ServerVerticle extends AbstractVerticle {
 
 		// use port
 		int port = settings.getPort();
-		log.info("Listening on port: " + port);
+		log.info("Listening on port: " + port + " - vert.x thread pool size: " + settings.getPoolSize());
 
 		// start up server
 		vertx.createHttpServer()
