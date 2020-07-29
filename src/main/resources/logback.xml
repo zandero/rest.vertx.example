@@ -7,6 +7,7 @@
     </appender>
 
     <logger name="com.zandero.rest" level="DEBUG" />
+    <logger name="com.zandero.rest.example" level="INFO" />
 
     <!-- Setting level to debug will show all logs produced -->
     <root level="info">

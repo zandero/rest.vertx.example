@@ -2,9 +2,8 @@ package com.zandero.rest.example.rest;
 
 import com.zandero.rest.annotation.ResponseWriter;
 import com.zandero.rest.example.service.SlowService;
-import com.zandero.rest.example.service.SlowServiceImpl;
 import com.zandero.rest.writer.GenericResponseWriter;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
 import javax.inject.Inject;
@@ -21,29 +20,29 @@ import static com.zandero.rest.example.ServerVerticle.API_ROOT;
 @Path(API_ROOT + "/slow")
 public class SlowRest {
 
-	private SlowService slowService;
+    private SlowService slowService;
 
-	@Inject
-	public SlowRest(SlowService injectedSlow) {
+    @Inject
+    public SlowRest(SlowService injectedSlow) {
 
-		slowService = injectedSlow;
-	}
+        slowService = injectedSlow;
+    }
 
-	@GET
-	@Path("down/{time}")
-	public int slowDown(@PathParam("time") int time) {
+    @GET
+    @Path("down/{time}")
+    public int slowDown(@PathParam("time") int time) {
 
-		slowService.wait(time);
-		return time;
-	}
+        slowService.wait(time);
+        return time;
+    }
 
-	@GET
-	@Path("async/{time}")
-	@ResponseWriter(GenericResponseWriter.class)
-	public Future<String> async(@Context Vertx vertx, @PathParam("time") int time) {
+    @GET
+    @Path("async/{time}")
+    @ResponseWriter(GenericResponseWriter.class)
+    public Promise<String> async(@Context Vertx vertx, @PathParam("time") int time) {
 
-		Future<String> future = Future.future();
-		slowService.async(vertx, future, time);
-		return future;
-	}
+        Promise<String> future = Promise.promise();
+        slowService.async(vertx, future, time);
+        return future;
+    }
 }

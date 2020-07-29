@@ -1,40 +1,57 @@
 package com.zandero.rest.example.rest;
 
+import com.zandero.rest.RestRouter;
+import com.zandero.rest.injection.InjectionProvider;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.ext.unit.TestContext;
-import org.junit.After;
-import org.junit.Before;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 
-import javax.ws.rs.ext.Provider;
+import javax.validation.Validator;
 
 /**
  *
  */
-@Provider
+@Disabled
 public class BaseTest {
 
-	protected static final int PORT = 3333;
+    protected static final int PORT = 3333;
 
-	private static final String HOST = "localhost";
+    protected static final String HOST = "localhost";
 
-	protected static final String ROOT_PATH = "http://" + HOST + ":" + PORT;
+    protected static final String ROOT_PATH = "http://" + HOST + ":" + PORT;
 
-	protected Vertx vertx;
+    protected static Vertx vertx = null;
+    protected static VertxTestContext vertxTestContext;
+    protected static WebClient client;
 
-	protected HttpClient client;
+    public static void before() {
 
-	@Before
-	public void before(TestContext context) {
+        vertx = Vertx.vertx();
+        vertxTestContext = new VertxTestContext();
 
-		vertx = Vertx.vertx();
-		client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(HOST).setDefaultPort(PORT));
-	}
+        // clear all registered writers or reader and handlers
+        RestRouter.getReaders().clear();
+        RestRouter.getWriters().clear();
+        RestRouter.getExceptionHandlers().clear();
+        RestRouter.getContextProviders().clear();
 
-	@After
-	public void after(TestContext context) {
+        // clear
+        RestRouter.validateWith((Validator) null);
+        RestRouter.injectWith((InjectionProvider) null);
 
-		vertx.close(context.asyncAssertSuccess());
-	}
+        client = WebClient.create(vertx);
+    }
+
+    @AfterEach
+    void lastChecks(Vertx vertx) {
+        vertx.close(vertxTestContext.succeeding());
+    }
+
+    @AfterAll
+    static void close() {
+        vertx.close();
+    }
 }

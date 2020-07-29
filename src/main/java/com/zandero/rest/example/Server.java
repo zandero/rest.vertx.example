@@ -9,6 +9,7 @@ import io.vertx.core.WorkerExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +34,11 @@ public class Server {
 			// show version only?
 			if (settings.showVersion()) {
 				showVersion();
+				return;
+			}
+
+			if (settings.showHelp()) {
+				showHelp(settings.getHelp());
 				return;
 			}
 

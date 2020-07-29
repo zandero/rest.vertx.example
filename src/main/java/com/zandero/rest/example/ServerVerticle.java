@@ -93,7 +93,7 @@ public class ServerVerticle extends AbstractVerticle {
 
 		// start up server
 		vertx.createHttpServer()
-		     .requestHandler(router::accept)
+		     .requestHandler(router)
 		     .listen(port);
 	}
 

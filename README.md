@@ -10,8 +10,13 @@ Build
 Run
 > java -jar target/rest.vertx.example.jar
 
+By default the example server starts on port: 4444, alternatively you can select a different port:
+> java -jar target/rest.vertx.example.jar -p 5555 
+
 Test
 > curl http://localhost:4444/api/echo
+
+
 
 
 See all available examples on: [http://localhost:4444/](http://localhost:4444/)
